@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An example serverless monolith written in Golang.
+
+Globals:
+  # Default settings for our function, based on 'lambda-perf', provided.al2 with a zipped Go application and the arm64 architecture is the best performing setup.
+  Function:
+    Timeout: 15
+    MemorySize: 512
+    Tracing: Active
+    Runtime: provided.al2
+    Architectures: ["arm64"]
+    Handler: bootstap
+
+Resources:
+
+  # Core monolithic application.
+  MonolithFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Events:
+        GetAll:
+          Type: Api
+          Properties:
+            Path: /{all+}
+            Method: GET
+        GetRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+        Post:
+          Type: Api
+          Properties:
+            Path: /{all+}
+            Method: POST
+        Delete:
+          Type: Api
+          Properties:
+            Path: /{all+}
+            Method: DELETE
+    Metadata:
+      BuildMethod: makefile
